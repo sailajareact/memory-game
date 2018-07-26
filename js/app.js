@@ -1,20 +1,20 @@
 let boardValues = [
-    "../images/blueshell.png",
-    "../images/Games-icon.png",
-    "../images/casino-icon.png",
-    "../images/Center-icon.png",
-    "../images/Chess-icon.png",
-    "../images/Mario-SZ-icon.png",
-    "../images/polito-icon.png",
-    "../images/blueshell.png",
-    "../images/Games-icon.png",
-    "../images/casino-icon.png",
-    "../images/Center-icon.png",
-    "../images/Chess-icon.png",
-    "../images/Mario-SZ-icon.png",
-    "../images/polito-icon.png",
-    "../images/soccer-icon.png",
-    "../images/soccer-icon.png"
+    "./images/blueshell.png",
+    "./images/Games-icon.png",
+    "./images/casino-icon.png",
+    "./images/Center-icon.png",
+    "./images/Chess-icon.png",
+    "./images/Mario-SZ-icon.png",
+    "./images/polito-icon.png",
+    "./images/blueshell.png",
+    "./images/Games-icon.png",
+    "./images/casino-icon.png",
+    "./images/Center-icon.png",
+    "./images/Chess-icon.png",
+    "./images/Mario-SZ-icon.png",
+    "./images/polito-icon.png",
+    "./images/soccer-icon.png",
+    "./images/soccer-icon.png"
   ];
   
   let boardTileIds = [];
@@ -27,7 +27,7 @@ let boardValues = [
     hours = 0;
   var counter = 0;
   var tm;
-  const queImage = "../images/icon-que.png";
+  const queImage = "/images/icon-que.png";
   
   const memoryBoard = document.getElementById("memory-board");
   const reset = document.getElementById("reset");
@@ -35,7 +35,7 @@ let boardValues = [
   const dialogCloseIcon = document.getElementsByClassName("close")[0];
   const numOfMoves = document.querySelector("#moves");
   const timer = document.querySelector("time");
-  const playAgain = document.querySelector("section button");
+  const playAgain = document.querySelector(".playAgain");
   const scoreDetails = document.querySelector("#scoreDetails");
   const stars = document.querySelectorAll(".fa-star");
   
@@ -61,6 +61,8 @@ let boardValues = [
     numOfMoves.innerHTML = counter;
     tilesFlipped = 0;
     matchedTileIds = [];
+    boardTileIds = [];
+    memoryValues = [];
     // resetting timer
     if (tm) {
       // tm = null;
@@ -69,8 +71,7 @@ let boardValues = [
       hours = 0;
       clearInterval(tm);
       tm = null;
-      console.log("in reset");
-    } else {
+     } else {
       seconds = 0;
       minutes = 0;
       hours = 0;
@@ -133,12 +134,15 @@ let boardValues = [
   function setUpCardFliped(tile, value) {
     tile.style.backgroundImage = `url(${value})`;
     tile.style.backgroundSize = "100% 100%";
+    tile.style.pointerEvents = 'none';
   }
   
   // flipback cards that are not matched
   function flipback() {
     document.getElementById(boardTileIds[0]).style.background = "rgb(166, 175, 172)";
+    document.getElementById(boardTileIds[0]).style.pointerEvents = 'auto';
     document.getElementById(boardTileIds[1]).style.background = "rgb(166, 175, 172)";
+    document.getElementById(boardTileIds[1]).style.pointerEvents = 'auto';
     memoryValues = [];
     boardTileIds = [];
   }
@@ -157,6 +161,7 @@ let boardValues = [
   // clearing the local saved arrays data after matching cards
   // and background color of tiles to restrict them
   function afterCatdsMatched() {
+    console.log("after matched");
     matchedTileIds.push(...boardTileIds);
     memoryValues = [];
     boardTileIds = [];
@@ -170,8 +175,8 @@ let boardValues = [
     tilesFlipped = 0;
     counter = 0;
     matchedTileIds = [];
-    console.log("matched tiles " + matchedTileIds);
-    // tm = null;
+    memoryValues = [];
+    boardTileIds = [];
   }
   
   // total time
@@ -198,14 +203,12 @@ let boardValues = [
   // when user clicks close (X) icon
   dialogCloseIcon.onclick = function() {
     dialog.style.display = "none";
-    // tm = null;
     startGame();
   };
   
   // when user clicks on playAgain button
   playAgain.addEventListener("click", function() {
     dialog.style.display = "none";
-    // tm=null;
     startGame();
   });
   
@@ -214,30 +217,28 @@ let boardValues = [
     if (moves > 8 && moves <= 11) {
       stars[stars.length - 1].classList.remove("checked");
     } else if (moves > 12 && moves < 16) {
-      stars[stars.length - 1].classList.remove("checked");
+      // stars[stars.length - 1].classList.remove("checked");
       stars[stars.length - 2].classList.remove("checked");
     } else if (moves > 16 && moves <= 19) {
-      stars[stars.length - 1].classList.remove("checked");
-      stars[stars.length - 2].classList.remove("checked");
+      // stars[stars.length - 1].classList.remove("checked");
+      // stars[stars.length - 2].classList.remove("checked");
       stars[stars.length - 3].classList.remove("checked");
     } else if (moves > 23) {
-      uncheckStars();
+      stars[stars.length - 4].classList.remove("checked");
+      // uncheckStars();
     }
   }
   
   // main memory game logic part
   function memoryFlipTile(e, tileClicked, value) {
-    // start timer
     if (!tm) {
       tm = setInterval(createTimer, 400);
     }
     // stating the game logic
     if (!matchedTileIds.includes(tileClicked.id) && memoryValues.length < 2) {
       setUpCardFliped(tileClicked, value);
-      console.log("e1");
       if (tileClicked.style.backgroundImage) {
         storeTileIdValue(tileClicked, value);
-        console.log("e2");
         if (memoryValues.length == 2) {
           counter = counter + 1;
           // ---game displays the current no.of moves
@@ -245,23 +246,18 @@ let boardValues = [
           //--- displaying the star rating
           setupRating(counter);
           // checkeing the wether cards r matched or not
-          console.log("e3");
           if (isMatchCards()) {
             afterCatdsMatched();
-            console.log("e4");
-            console.log("tiles fliped " + tilesFlipped);
             //--- check wether the game is over or not
             if (boardValues.length == tilesFlipped) {
               //--- clearing the timer interval
               clearInterval(tm);
               tm = null;
-              console.log("e6");
               //--- invoke gameover method to genrate dialog box
               setTimeout(gameOver, 100);
             }
           } else {
             setTimeout(flipback, 200);
-            console.log("e5");
           }
         }
       }
